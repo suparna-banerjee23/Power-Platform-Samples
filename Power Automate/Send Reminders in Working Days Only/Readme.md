@@ -1,4 +1,4 @@
-Sending Reminders through Power Automate is a very common task. This is usually achieved through a scheduled Flow where the Flow runs daily ,loops through all items in a list and if the due date of any matches with today's date, send the reminder.
+Sending Reminders through Power Automate is a very common task. This is usually achieved through a scheduled Flow where the Flow runs daily ,loops through all the tasks in a list and if the due date of any matches with today's date, sends the reminder.
 
   
 
