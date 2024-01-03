@@ -14,7 +14,7 @@ To overcome this issue, I have created this sample Flow with below logic -
 
   
 
-The Solution contains –
+The unmanaged Solution HandlenonworkingDays_1_0_0_2.zip contains –
 
 1.     Cloud Flow - Send Reminders on Working Days only - Scheduled Flow with weekly frequency that runs on Monday, Tuesday, Wednesday, Thursday and Friday (excluding Saturday and Sunday)
 
