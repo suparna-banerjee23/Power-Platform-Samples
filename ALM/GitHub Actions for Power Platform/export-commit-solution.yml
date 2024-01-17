@@ -1,0 +1,140 @@
+name: export-commit-solution
+# Export solution from DEV environment
+#  unpack solution, commit and push to a git branch with the changes
+
+on:
+  workflow_dispatch:
+    inputs:
+     # Change this value
+      ENVIRONMENT_URL:
+        description: "URL of the source environment to export solution"
+        required: true
+        default: 'https://orgd3f89d21.crm.dynamics.com/'
+      # Change this value
+      solution_name:
+        description: 'name of the solution to worked on from Power Platform'
+        required: true
+        default: ContosoDemo
+       # Change this value
+      user_email: 
+        description: "User email for the commit"
+        required: true
+        default: admin@M365x936635.onmicrosoft.com
+     # Change this value
+      user_name: 
+        description: "User name for the commit"
+        required: true
+        default: Suparna
+      # Change this value
+      commit_message:
+        description: "Message to provide for the commit"
+        required: true
+        default: "Commiting to GitHub Repo"
+      # Change this value (If new branch is kept blank, the solution will be commited to this branch)
+      existing_branch:
+        description: "Existing Branch for the solution commit"
+        required: true
+        default: main
+      # Change this value (If not blank, new branch will be created based on existing branch andthe solution will be commited to this branch)
+      new_branch:
+        description: "New Branch to create for the solution commit"
+        required: false
+        
+       
+       
+       #Do Not change these values
+           
+      solution_target_folder: 
+       description: 'folder name to be created and checked in *do not change*'
+       required: true
+       default: solutions/
+     
+env:
+#Secrets for authentication
+ 
+  CLIENT_ID: ${{secrets.CLIENT_ID}}   
+  TENANT_ID: ${{secrets.TENANT_ID}}   
+  CLIENT_SECRET: ${{secrets.CLIENT_SECRET}}
+
+jobs:
+  export-from-dev:
+    runs-on: windows-latest
+    # or you can say runs-on: ubuntu-latest
+    env:
+      RUNNER_DEBUG: 1
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+       ref: ${{ github.event.inputs.existing_branch }}
+       lfs: true
+
+    - name: Install Power Platform Tools
+      id: install-power-platform-tools
+      uses: microsoft/powerplatform-actions/actions-install@v1
+      with:
+       pac-version-override: 1.29.11
+
+    #Create new branch if specified
+    - name: create new branch if specified
+      shell: pwsh
+      run: |
+            if('${{ github.event.inputs.new_branch }}' -ne '') {
+                git checkout -b ${{ github.event.inputs.new_branch }} ${{ github.event.inputs.existing_branch }}
+            }
+
+   
+    - name: export-solution action -unmanaged
+      uses: microsoft/powerplatform-actions/export-solution@v1
+      with:
+        environment-url: ${{github.event.inputs.ENVIRONMENT_URL}}
+        app-id: ${{env.CLIENT_ID}}
+        client-secret:  ${{env.CLIENT_SECRET}}
+        tenant-id: ${{env.TENANT_ID}}
+        solution-name: ${{ github.event.inputs.solution_name }}
+        solution-output-file: ${{ github.event.inputs.solution_name }}.zip
+        
+    - name: export-solution action -managed
+      uses: microsoft/powerplatform-actions/export-solution@v1
+      with:
+        environment-url: ${{github.event.inputs.ENVIRONMENT_URL}}
+        app-id: ${{env.CLIENT_ID}}
+        client-secret: ${{env.CLIENT_SECRET}}
+        tenant-id: ${{env.TENANT_ID}}
+        solution-name: ${{ github.event.inputs.solution_name }}
+        managed: true
+        solution-output-file: ${{ github.event.inputs.solution_name }}_managed.zip
+
+    - name: unpack-solution action
+      uses: microsoft/powerplatform-actions/unpack-solution@v1
+      with:
+        solution-file: ${{ github.event.inputs.solution_name }}.zip
+        solution-folder: ${{ github.event.inputs.solution_target_folder}}/${{ github.event.inputs.solution_name }}
+        solution-type: 'Both'
+        overwrite-files: true
+
+    
+     # Commit changes 
+    - name: commit changes
+      shell: pwsh
+      run: |
+         
+          git config user.name "Suparna Admin"
+          git config user.email "admin@M365x936635.onmicrosoft.com"
+          git pull 
+          git add ${{ github.event.inputs.solution_target_folder}}/${{ github.event.inputs.solution_name }}
+          git commit -am "${{ github.event.inputs.commit_message }}" --allow-empty   
+
+  
+
+      
+      # Push the committed changes to the existing or new branch
+    - name: push to branch
+      shell: pwsh
+      run: |
+          if('${{ github.event.inputs.new_branch }}' -ne '') {
+              git push origin ${{ github.event.inputs.new_branch }}
+          } else {
+              git push origin ${{ github.event.inputs.existing_branch }}
+          }
+          
