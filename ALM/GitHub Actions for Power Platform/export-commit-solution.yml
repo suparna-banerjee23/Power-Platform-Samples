@@ -9,23 +9,23 @@ on:
       ENVIRONMENT_URL:
         description: "URL of the source environment to export solution"
         required: true
-        default: 'https://orgd3f89d21.crm.dynamics.com/'
-      # Change this value
+        default: 'https://orgxxxxxx.crm.dynamics.com/'
+      # Change the default value
       solution_name:
         description: 'name of the solution to worked on from Power Platform'
         required: true
-        default: ContosoDemo
+        default: SampleSolution
        # Change this value
       user_email: 
         description: "User email for the commit"
         required: true
         default: admin@M365x936635.onmicrosoft.com
-     # Change this value
+     # Change the default value
       user_name: 
         description: "User name for the commit"
         required: true
         default: Suparna
-      # Change this value
+      # Change the default value
       commit_message:
         description: "Message to provide for the commit"
         required: true
