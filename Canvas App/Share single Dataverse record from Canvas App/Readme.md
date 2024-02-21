@@ -5,7 +5,6 @@ It has been implemented with below logic -
 - Deep Linking to a specific screen in the Canvas App
 - Calling a Flow from Canvas App to perform below operations-
   - Check if the requested user already has access into the App, if not, provide Read Only access.
-  - Check if the requested user already has access into the App, if not, provide Read Only access.
   - Check if the requested user already has access into the Dataverse Record, if not, provide Read Only access.
   - Send a mail to the user with Deep link to that specific screen containing the record.
 
